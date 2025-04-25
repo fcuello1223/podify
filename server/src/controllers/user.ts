@@ -119,6 +119,9 @@ export const generateForgotPasswordLink: RequestHandler = async (req, res) => {
   res.json({ message: "Please Check Your Registed E-Mail!" });
 };
 
+
+
+
 export const grantValid: RequestHandler = async (req, res) => {
   res.json({ valid: true });
 };
