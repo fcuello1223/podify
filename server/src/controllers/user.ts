@@ -1,6 +1,7 @@
 import { RequestHandler } from "express";
 import { isValidObjectId } from "mongoose";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 import { CreateUser, VerifyEmailRequest } from "#/types/user";
 import User from "#/models/user";
@@ -12,7 +13,7 @@ import {
 } from "#/utils/mail";
 import EmailVerificationToken from "#/models/emailVerificationToken";
 import PasswordResetToken from "#/models/passwordResetToken";
-import { PASSWORD_RESET_LINK } from "#/utils/variables";
+import { JWT_SECRET, PASSWORD_RESET_LINK } from "#/utils/variables";
 
 export const create: RequestHandler = async (req: CreateUser, res) => {
   const { name, email, password } = req.body;
@@ -119,9 +120,6 @@ export const generateForgotPasswordLink: RequestHandler = async (req, res) => {
   res.json({ message: "Please Check Your Registed E-Mail!" });
 };
 
-
-
-
 export const grantValid: RequestHandler = async (req, res) => {
   res.json({ valid: true });
 };
@@ -152,4 +150,39 @@ export const updatePassword: RequestHandler = async (req, res) => {
   sendPasswordResetSuccessEmail(targetUser.name, targetUser.email);
 
   res.json({ message: "Password Reset Successfully!" });
+};
+
+export const signIn: RequestHandler = async (req, res) => {
+  const { email, password } = req.body;
+
+  const targetUser = await User.findOne({ email: email });
+
+  if (!targetUser) {
+    return res.status(403).json({ error: "E-Mail/Password Mismatch!" });
+  }
+
+  const passwordMatch = await targetUser.comparePassword(password);
+
+  if (!passwordMatch) {
+    return res.status(403).json({ error: "E-Mail/Password Mismatch!" });
+  }
+
+  const token = jwt.sign({ userId: targetUser._id }, JWT_SECRET);
+
+  targetUser.tokens.push(token);
+
+  await targetUser.save();
+
+  res.json({
+    profile: {
+      id: targetUser._id,
+      name: targetUser.name,
+      email: targetUser.email,
+      verified: targetUser.verified,
+      avatar: targetUser.avatar?.url,
+      followers: targetUser.followers.length,
+      followings: targetUser.followings.length,
+    },
+    token: token,
+  });
 };

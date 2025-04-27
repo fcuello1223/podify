@@ -57,3 +57,8 @@ export const UpdatePasswordSchema = yup.object().shape({
       "Password must include at least one uppercase letter, one lowercase letter, one number, and one special character."
     ),
 });
+
+export const SignInValidationSchema = yup.object().shape({
+  email: yup.string().required("E-Mail Is Missing!").email("Invalid E-Mail ID"),
+  password: yup.string().trim().required("Password Is Missing!"),
+});
