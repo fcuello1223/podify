@@ -1,7 +1,8 @@
-import { Model, model, models, ObjectId, Schema } from "mongoose";
+import { model, models, ObjectId, Schema, Types } from "mongoose";
 import bcrypt, { compare } from "bcrypt";
 
-interface UserDocument {
+export interface UserDocument {
+  _id: Types.ObjectId,
   name: string;
   email: string;
   password: string;
@@ -81,15 +82,34 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-userSchema.methods.comparePassword = async function (password) {
-  const result = await compare(password, this.password);
-  return result;
+// userSchema.methods.comparePassword = async function (password: string) {
+//   const result = await compare(password, this.password);
+//   return result;
+// };
+userSchema.methods.comparePassword = async function (
+  this: UserDocument,
+  password: string
+): Promise<boolean> {
+  return await compare(password, this.password);
 };
 
 
+// const User =
+//   (models.User as Model<UserDocument, {}, Methods>) ||
+//   model<UserDocument>("User", userSchema);
+
+// export default User;
+
+// const User =
+//   (models.User as ReturnType<typeof model<UserDocument, {}, Methods>>) ??
+//   model<UserDocument, {}, Methods>("User", userSchema);
+
+// export default User;
+
 const User =
-  (models.User as Model<UserDocument, {}, Methods>) ||
-  model<UserDocument>("User", userSchema);
+  (models.User as ReturnType<typeof model<UserDocument, {}, Methods>>) ??
+  model<UserDocument, {}, Methods>("User", userSchema as any); // temporary workaround
 
 export default User;
+
 

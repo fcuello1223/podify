@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 
 import { CreateUser, VerifyEmailRequest } from "#/types/user";
 import User from "#/models/user";
-import { generateToken } from "#/utils/helper";
+import { formatProfile, generateToken } from "#/utils/helper";
 import {
   sendForgotPasswordLink,
   sendPasswordResetSuccessEmail,
@@ -14,6 +14,9 @@ import {
 import EmailVerificationToken from "#/models/emailVerificationToken";
 import PasswordResetToken from "#/models/passwordResetToken";
 import { JWT_SECRET, PASSWORD_RESET_LINK } from "#/utils/variables";
+import { RequestWithFiles } from "#/middlewares/fileParser";
+import formidable from "formidable";
+import cloudinary from "#/cloud";
 
 export const create: RequestHandler = async (req: CreateUser, res) => {
   const { name, email, password } = req.body;
@@ -185,4 +188,76 @@ export const signIn: RequestHandler = async (req, res) => {
     },
     token: token,
   });
+};
+
+export const updateProfile: RequestHandler = async (
+  req: RequestWithFiles,
+  res
+) => {
+  try {
+    const { name } = req.body;
+    const avatar = req.files?.avatar as formidable.File;
+
+    const targetUser = await User.findById(req.user.id);
+
+    if (!targetUser) {
+      return res.status(404).json({ error: "User not found." });
+    }
+
+    if (typeof name !== "string" || name.trim().length < 3) {
+      return res.status(422).json({ error: "Invalid Name!" });
+    }
+
+    targetUser.name = name;
+
+    if (avatar) {
+      if (targetUser.avatar?.publicId) {
+        await cloudinary.uploader.destroy(targetUser.avatar?.publicId);
+      }
+      const { secure_url, public_id } = await cloudinary.uploader.upload(
+        avatar.filepath,
+        {
+          width: 300,
+          height: 300,
+          crop: "thumb",
+          gravity: "face",
+        }
+      );
+
+      targetUser.avatar = { url: secure_url, publicId: public_id };
+    }
+
+    await targetUser.save();
+
+    res.json({ profile: formatProfile(targetUser) });
+  } catch (err) {
+    console.error("Update profile failed:", err);
+    res.status(500).json({ error: "Something went wrong. Please try again." });
+  }
+};
+
+export const sendProfile: RequestHandler = (req, res) => {
+  res.json({ profile: req.user });
+};
+
+export const logout: RequestHandler = async (req, res) => {
+  const { fromAll } = req.query;
+
+  const userToken = req.token;
+
+  const targetUser = await User.findById(req.user.id);
+
+  if (!targetUser) {
+    throw new Error("Something Went Wrong! User Not Found!");
+  }
+
+  if (fromAll === "yes") {
+    targetUser.tokens = [];
+  } else {
+    targetUser.tokens = targetUser.tokens.filter((token) => token !== userToken);
+  }
+
+  await targetUser.save();
+
+  res.json({ success: true });
 };

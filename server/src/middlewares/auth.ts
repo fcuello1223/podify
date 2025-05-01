@@ -60,17 +60,7 @@ export const userMustBeAuth: RequestHandler = async (req, res, next) => {
     followings: verifiedUser.followings.length,
   };
 
-  // res.json({
-  //   profile: {
-  //     id: verifiedUser._id,
-  //     name: verifiedUser.name,
-  //     email: verifiedUser.email,
-  //     verified: verifiedUser.verified,
-  //     avatar: verifiedUser.avatar?.url,
-  //     followers: verifiedUser.followers.length,
-  //     followings: verifiedUser.followings.length,
-  //   },
-  // });
+  req.token = token;
 
   next();
 };
