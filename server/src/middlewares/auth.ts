@@ -34,6 +34,7 @@ export const isValidPasswordResetToken: RequestHandler = async (
 
 export const userMustBeAuth: RequestHandler = async (req, res, next) => {
   const { authorization } = req.headers;
+
   const token = authorization?.split("Bearer ")[1];
 
   if (!token) {
@@ -61,6 +62,14 @@ export const userMustBeAuth: RequestHandler = async (req, res, next) => {
   };
 
   req.token = token;
+
+  next();
+};
+
+export const isVerified: RequestHandler = (req, res, next) => {
+  if (!req.user.verified) {
+    return res.status(403).json({ error: "Please Verify Your E-Mail!" });
+  }
 
   next();
 };

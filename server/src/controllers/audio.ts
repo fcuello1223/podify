@@ -1,0 +1,119 @@
+import { RequestHandler } from "express";
+import formidable from "formidable";
+
+import { RequestWithFiles } from "#/middlewares/fileParser";
+import { categoryTypes } from "#/utils/audioCategories";
+import Audio from "#/models/audio";
+import cloudinary from "#/cloud";
+
+interface CreateAudioRequest extends RequestWithFiles {
+  body: {
+    title: string;
+    about: string;
+    category: categoryTypes;
+  };
+}
+
+export const createAudio: RequestHandler = async (
+  req: CreateAudioRequest,
+  res
+) => {
+  const { title, about, category } = req.body;
+
+  const poster = req.files?.poster as formidable.File;
+  const audioFile = req.files?.file as formidable.File;
+  const ownerId = req.user.id;
+
+  if (!audioFile) {
+    return res.status(422).json({ error: "Audio File Is Missing!" });
+  }
+
+  const audioResponse = await cloudinary.uploader.upload(audioFile.filepath, {
+    resource_type: "video",
+  });
+
+  const newAudio = new Audio({
+    title: title,
+    about: about,
+    category: category,
+    owner: ownerId,
+    file: { url: audioResponse.url, publicId: audioResponse.public_id },
+  });
+
+  if (poster) {
+    const posterResponse = await cloudinary.uploader.upload(poster.filepath, {
+      width: 300,
+      height: 300,
+      crop: "thumb",
+      gravity: "face",
+    });
+
+    newAudio.poster = {
+      url: posterResponse.secure_url,
+      publicId: posterResponse.public_id,
+    };
+  }
+
+  await newAudio.save();
+
+  res.status(201).json({
+    audio: {
+      title: title,
+      about: about,
+      file: newAudio.file.url,
+      poster: newAudio.poster?.url,
+    },
+  });
+};
+
+export const updateAudio: RequestHandler = async (
+  req: CreateAudioRequest,
+  res
+) => {
+  const { title, about, category } = req.body;
+
+  const poster = req.files?.poster as formidable.File;
+
+  const ownerId = req.user.id;
+
+  const { audioId } = req.params;
+
+  const targetAudio = await Audio.findOneAndUpdate(
+    { owner: ownerId, _id: audioId },
+    { title: title, about: about, category: category },
+    { new: true }
+  );
+
+  if (!targetAudio) {
+    return res.status(404).json({ error: "Record Not Found!" });
+  }
+
+  if (poster) {
+    if (targetAudio.poster?.publicId) {
+      await cloudinary.uploader.destroy(targetAudio.poster.publicId);
+    }
+
+    const posterResponse = await cloudinary.uploader.upload(poster.filepath, {
+      width: 300,
+      height: 300,
+      crop: "thumb",
+      gravity: "face",
+    });
+
+    targetAudio.poster = {
+      url: posterResponse.secure_url,
+      publicId: posterResponse.public_id,
+    };
+
+    await targetAudio.save();
+  }
+  
+  res.status(201).json({
+    audio: {
+      title: title,
+      about: about,
+      file: targetAudio.file.url,
+      poster: targetAudio.poster?.url,
+    },
+  });
+};

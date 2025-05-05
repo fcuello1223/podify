@@ -1,4 +1,4 @@
-import { model, models, ObjectId, Schema, Types } from "mongoose";
+import {Model, model, models, Schema, Types } from "mongoose";
 import bcrypt, { compare } from "bcrypt";
 
 export interface UserDocument {
@@ -12,9 +12,9 @@ export interface UserDocument {
     publicId: string;
   };
   tokens: string[];
-  favorites: ObjectId[];
-  followers: ObjectId[];
-  followings: ObjectId[];
+  favorites: Types.ObjectId[];
+  followers: Types.ObjectId[];
+  followings: Types.ObjectId[];
 }
 
 interface Methods {
@@ -69,7 +69,6 @@ const userSchema = new Schema<UserDocument, {}, Methods>(
   { timestamps: true }
 );
 
-//Hash Password
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
 
@@ -82,10 +81,6 @@ userSchema.pre("save", async function (next) {
   }
 });
 
-// userSchema.methods.comparePassword = async function (password: string) {
-//   const result = await compare(password, this.password);
-//   return result;
-// };
 userSchema.methods.comparePassword = async function (
   this: UserDocument,
   password: string
@@ -93,23 +88,11 @@ userSchema.methods.comparePassword = async function (
   return await compare(password, this.password);
 };
 
-
-// const User =
-//   (models.User as Model<UserDocument, {}, Methods>) ||
-//   model<UserDocument>("User", userSchema);
-
-// export default User;
-
-// const User =
-//   (models.User as ReturnType<typeof model<UserDocument, {}, Methods>>) ??
-//   model<UserDocument, {}, Methods>("User", userSchema);
-
-// export default User;
-
-const User =
-  (models.User as ReturnType<typeof model<UserDocument, {}, Methods>>) ??
-  model<UserDocument, {}, Methods>("User", userSchema as any); // temporary workaround
+const User: Model<UserDocument, {}, Methods> =
+  (models.User as Model<UserDocument, {}, Methods>) ??
+  model<UserDocument, {}, Methods>("User", userSchema);
 
 export default User;
+
 
 
