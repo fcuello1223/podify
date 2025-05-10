@@ -5,6 +5,7 @@ import authRouter from "./routes/auth";
 import audioRouter from "./routes/audio";
 import favoriteRouter from "./routes/favorite";
 import playlistRouter from "./routes/playlist";
+import profileRouter from "./routes/profile";
 
 import "./database";
 
@@ -18,6 +19,7 @@ app.use("/auth", authRouter);
 app.use("/audio", audioRouter);
 app.use("/favorites", favoriteRouter);
 app.use("/playlist", playlistRouter);
+app.use("/profile", profileRouter);
 
 const PORT = process.env.PORT || 8383;
 
