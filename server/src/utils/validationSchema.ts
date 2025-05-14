@@ -98,3 +98,23 @@ export const OldPlaylistValidationSchema = yup.object().shape({
     .string()
     .oneOf(["public", "private"], "Visibility Must Be Public or Private!")
 });
+
+export const UpdateHistoryValidationSchema = yup.object().shape({
+  audio: yup
+    .string()
+    .transform(function (val) {
+      return this.isType(val) && isValidObjectId(val) ? val : "";
+    })
+    .required("Invalid Audio ID!"),
+  progress: yup.number().required("History Progress is Missing!"),
+  date: yup
+    .string()
+    .transform(function (val) {
+      const date = new Date(val);
+      if (date instanceof Date) {
+        return val;
+      }
+      return "";
+    })
+    .required("Invalid Date!"),
+});
