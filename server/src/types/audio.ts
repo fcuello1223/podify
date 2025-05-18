@@ -1,12 +1,11 @@
-import { ObjectId } from "mongoose";
 import { Request } from "express";
 
 import { AudioDocument } from "#/models/audio";
 
 
 export type PopulatedFavoriteList = AudioDocument<{
-  _id: ObjectId;
   name: string;
+  email: string;
 }>;
 
 export interface CreatePlaylistRequest extends Request {
