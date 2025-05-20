@@ -21,6 +21,12 @@ import cloudinary from "#/cloud";
 export const create: RequestHandler = async (req: CreateUser, res) => {
   const { name, email, password } = req.body;
 
+  const oldUser = await User.findOne({ email: email });
+
+  if (oldUser) {
+    return res.status(403).json({ error: "E-Mail Already In Use!" });
+  }
+
   const newUser = await User.create({ name, email, password });
 
   const token = generateToken();
@@ -75,6 +81,12 @@ export const sendReVerificationToken: RequestHandler = async (req, res) => {
   const user = await User.findById(userId);
 
   if (!user) return res.status(403).json({ error: "Invalid request!" });
+
+  if (user.verified) {
+    return res
+      .status(422)
+      .json({ error: "You Account Has Already Been Verified!" });
+  }
 
   await EmailVerificationToken.findOneAndDelete({
     owner: userId,
@@ -254,7 +266,9 @@ export const logout: RequestHandler = async (req, res) => {
   if (fromAll === "yes") {
     targetUser.tokens = [];
   } else {
-    targetUser.tokens = targetUser.tokens.filter((token) => token !== userToken);
+    targetUser.tokens = targetUser.tokens.filter(
+      (token) => token !== userToken
+    );
   }
 
   await targetUser.save();

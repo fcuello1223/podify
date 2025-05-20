@@ -1,5 +1,6 @@
 import express from "express";
 import "dotenv/config";
+import 'express-async-errors';
 
 import authRouter from "./routes/auth";
 import audioRouter from "./routes/audio";
@@ -10,6 +11,7 @@ import historyRouter from './routes/history';
 
 import "./database";
 import './utils/schedule';
+import { errorHandler } from "./middlewares/error";
 
 const app = express();
 
@@ -23,6 +25,8 @@ app.use("/favorites", favoriteRouter);
 app.use("/playlist", playlistRouter);
 app.use("/profile", profileRouter);
 app.use('/history', historyRouter);
+
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 8383;
 

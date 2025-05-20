@@ -39,7 +39,7 @@ export const createAudio: RequestHandler = async (
     about: about,
     category: category,
     owner: ownerId,
-    file: { url: audioResponse.url, publicId: audioResponse.public_id },
+    file: { url: audioResponse.secure_url, publicId: audioResponse.public_id },
   });
 
   if (poster) {
