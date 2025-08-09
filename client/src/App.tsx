@@ -1,11 +1,26 @@
 import React from "react";
+import {
+  SignedIn,
+  SignedOut,
+  SignInButton,
+  UserButton,
+} from "@clerk/clerk-react";
+
 import { Button } from "./components/ui/button";
 
 function App() {
   return (
     <React.Fragment>
-      <h1 className="text-red-500 text-5xl">Hellobhbh</h1>
-      <Button variant="outline">Click Here</Button>
+      <header>
+        <SignedOut>
+          <SignInButton>
+            <Button>Sign In</Button>
+          </SignInButton>
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
+      </header>
     </React.Fragment>
   );
 }
