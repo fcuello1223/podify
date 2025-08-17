@@ -1,27 +1,24 @@
-import React from "react";
-import {
-  SignedIn,
-  SignedOut,
-  SignInButton,
-  UserButton,
-} from "@clerk/clerk-react";
+import { Fragment } from "react";
+import { Route, Routes } from "react-router-dom";
+import { AuthenticateWithRedirectCallback } from "@clerk/clerk-react";
 
-import { Button } from "./components/ui/button";
+import Home from "./pages/Home";
+import Auth from "./pages/Auth";
+import MainLayout from "./layout/MainLayout";
+import Chat from "./pages/Chat";
 
 function App() {
   return (
-    <React.Fragment>
-      <header>
-        <SignedOut>
-          <SignInButton>
-            <Button>Sign In</Button>
-          </SignInButton>
-        </SignedOut>
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </header>
-    </React.Fragment>
+    <Fragment>
+      <Routes>
+        <Route path="/sso" element={<AuthenticateWithRedirectCallback />} />
+        <Route path="/auth" element={<Auth />} />
+        <Route element={<MainLayout />}>
+          <Route path="/" element={<Home />} />
+          <Route path="/chat" element={<Chat />} />
+        </Route>
+      </Routes>
+    </Fragment>
   );
 }
 
