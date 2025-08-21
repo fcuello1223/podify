@@ -6,7 +6,7 @@ import { HomeIcon, Library, MessageCircle } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "./ui/button";
 import { ScrollArea } from "./ui/scroll-area";
-import PlaylistSkeleton from "./PlaylistSkeleton";
+import PlaylistSkeleton from "./templates/PlaylistTemplate";
 import { useMusicStore } from "@/stores/MusicStore";
 
 const LeftSidebar = () => {
@@ -78,7 +78,9 @@ const LeftSidebar = () => {
                   />
                   <div className="flex-1 min-w-0 hidden md:block">
                     <p className="font-medium truncate">{album.title}</p>
-                    <p className="text-sm text-zinc-400 truncate">Album - {album.artist}</p>
+                    <p className="text-sm text-zinc-400 truncate">
+                      Album - {album.artist}
+                    </p>
                   </div>
                 </Link>
               ))

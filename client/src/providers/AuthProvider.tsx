@@ -3,6 +3,7 @@ import { useAuth } from "@clerk/clerk-react";
 import { Loader } from "lucide-react";
 
 import { axiosInstance } from "@/lib/axios";
+import { useAuthStore } from "@/stores/AuthStore";
 
 const updateApiToken = (token: string | null) => {
   if (token) {
@@ -17,11 +18,16 @@ const AuthProvider = ({ children }: { children: React.ReactNode }) => {
 
   const [loading, setLoading] = useState(true);
 
+  const { checkAdminStatus } = useAuthStore();
+
   useEffect(() => {
     const initializeAuth = async () => {
       try {
         const token = await getToken();
         updateApiToken(token);
+        if (token) {
+          await checkAdminStatus();
+        }
       } catch (error) {
         updateApiToken(null);
         console.log("Authorization Provider Error!", error);
