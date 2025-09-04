@@ -3,8 +3,12 @@ import { useUser } from "@clerk/clerk-react";
 import { HeadphonesIcon, Music, Users } from "lucide-react";
 
 import { useChatStore } from "@/stores/ChatStore";
-import { ScrollArea } from "./ui/scroll-area";
-import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from "../../components/ui/avatar";
 
 const LoginPrompt = () => {
   return (

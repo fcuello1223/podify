@@ -28,7 +28,7 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
       currentIndex: get().currentIndex === -1 ? 0 : get().currentIndex,
     });
   },
-  
+
   playAlbum: (songs: Song[], startIndex = 0) => {
     if (songs.length === 0) {
       return;
@@ -91,11 +91,11 @@ export const usePlayerStore = create<PlayerStore>((set, get) => ({
 
     if (prevIndex >= 0) {
       const prevSong = queue[prevIndex];
-      
+
       set({
         currentIndex: prevIndex,
         currentSong: prevSong,
-        isPlaying: false,
+        isPlaying: true,
       });
     } else {
       set({ isPlaying: false });

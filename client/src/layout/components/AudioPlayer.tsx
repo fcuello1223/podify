@@ -50,7 +50,7 @@ const AudioPlayer = () => {
         audio.play();
       }
     }
-  }, [currentSong, isPlaying])
+  }, [currentSong, isPlaying]);
 
   return <audio ref={audioRef} />;
 };

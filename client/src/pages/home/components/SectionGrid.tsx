@@ -1,7 +1,8 @@
 import type { Song } from "@/types";
 
-import SectionGridTemplate from "./templates/SectionGridTemplate";
-import { Button } from "./ui/button";
+import SectionGridTemplate from "../../../components/templates/SectionGridTemplate";
+import { Button } from "../../../components/ui/button";
+import PlayButton from "./PlayButton";
 
 type SectionGridProps = {
   title: string;
@@ -39,6 +40,7 @@ const SectionGrid = ({ title, songs, isLoading }: SectionGridProps) => {
                     className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
+                <PlayButton song={song} />
               </div>
               <h3 className="font-medium mb-2 truncate">{song.title}</h3>
               <p className="text-sm text-zinc-400 truncate">{song.artist}</p>

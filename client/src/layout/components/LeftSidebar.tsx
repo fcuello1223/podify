@@ -4,9 +4,9 @@ import { SignedIn } from "@clerk/clerk-react";
 import { HomeIcon, Library, MessageCircle } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { buttonVariants } from "./ui/button";
-import { ScrollArea } from "./ui/scroll-area";
-import PlaylistSkeleton from "./templates/PlaylistTemplate";
+import { buttonVariants } from "../../components/ui/button";
+import { ScrollArea } from "../../components/ui/scroll-area";
+import PlaylistSkeleton from "../../components/templates/PlaylistTemplate";
 import { useMusicStore } from "@/stores/MusicStore";
 
 const LeftSidebar = () => {
@@ -15,8 +15,6 @@ const LeftSidebar = () => {
   useEffect(() => {
     fetchAlbums();
   }, [fetchAlbums]);
-
-  console.log({ albums }, "\n");
 
   return (
     <div className="flex flex-col gap-2 h-full">

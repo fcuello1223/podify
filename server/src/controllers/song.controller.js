@@ -2,7 +2,7 @@ import { Song } from "../models/song.model.js";
 
 export const getAllSongs = async (req, res, next) => {
   try {
-    const songs = await Song.find({}).sort({ createdAt: -1 });
+    const songs = await Song.find().sort({ createdAt: -1 });
 
     res.json(songs);
   } catch (error) {
@@ -22,6 +22,7 @@ export const getFeaturedSongs = async (req, res, next) => {
           title: 1,
           artist: 1,
           imageUrl: 1,
+          audioUrl: 1,
           albumId: 1,
         },
       },
@@ -45,6 +46,7 @@ export const getMadeForYouSongs = async (req, res, next) => {
           title: 1,
           artist: 1,
           imageUrl: 1,
+          audioUrl: 1,
           albumId: 1,
         },
       },
@@ -68,6 +70,7 @@ export const getTrendingSongs = async (req, res, next) => {
             title: 1,
             artist: 1,
             imageUrl: 1,
+            audioUrl: 1,
             albumId: 1,
           },
         },

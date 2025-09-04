@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Clock, Pause, Play } from "lucide-react";
 import { usePlayerStore } from "@/stores/PlayerStore";
 
-const formatDuration = (seconds: number) => {
+export const formatDuration = (seconds: number) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
 
@@ -58,7 +58,7 @@ const Album = () => {
       <ScrollArea className="h-full rounded-md">
         <div className="relative min-h-full">
           <div
-            className="absolute inset-0 bg-gradient-to-b from-[#379e41]/80 via-zinc-900/80 to-zinc-900 pointer-events-none"
+            className="absolute inset-0 bg-gradient-to-b from-[#2058b2]/80 via-zinc-900/80 to-zinc-900 pointer-events-none"
             aria-hidden="true"
           />
           <div className="relative z-10">
@@ -87,7 +87,7 @@ const Album = () => {
               <Button
                 onClick={handlePlayAlbum}
                 size="icon"
-                className="w-14 h-14 rounded-full bg-green-500 hover:bg-green-400 hover:scale-105 transition-all"
+                className="w-14 h-14 rounded-full bg-blue-500 hover:bg-blue-400 hover:scale-105 transition-all"
               >
                 {isPlaying &&
                 currentAlbum?.songs.some(
@@ -123,7 +123,7 @@ const Album = () => {
                       >
                         <div className="flex items-center justify-center">
                           {isCurrentSong && isPlaying ? (
-                            <div className="size-4 text-green-500">♫</div>
+                            <div className="size-4 text-blue-500">♫</div>
                           ) : (
                             <span className="group-hover:hidden">
                               {index + 1}

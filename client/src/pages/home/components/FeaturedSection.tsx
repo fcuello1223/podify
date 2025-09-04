@@ -1,6 +1,7 @@
 import { useMusicStore } from "@/stores/MusicStore";
 
-import FeaturedGridTemplate from "./templates/FeaturedGridTemplate";
+import FeaturedGridTemplate from "../../../components/templates/FeaturedGridTemplate";
+import PlayButton from "./PlayButton";
 
 const FeaturedSection = () => {
   const { isLoading, error, featuredSongs } = useMusicStore();
@@ -32,6 +33,7 @@ const FeaturedSection = () => {
                 {song.artist}
               </p>
             </div>
+            <PlayButton song={song} />
           </div>
         );
       })}
