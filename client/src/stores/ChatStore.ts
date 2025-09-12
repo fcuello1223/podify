@@ -5,7 +5,7 @@ import { axiosInstance } from "@/lib/axios";
 import type { Message, User } from "@/types";
 
 interface ChatStore {
-  users: any[];
+  users: User[];
   isLoading: boolean;
   error: string | null;
   socket: any;
@@ -18,12 +18,14 @@ interface ChatStore {
   fetchUsers: () => Promise<void>;
   initializeSocket: (userId: string) => void;
   disconnectSocket: () => void;
-  sendMessage: (senderId: string, receiverId: string, content: string) => void;
+  // sendMessage: (senderId: string, receiverId: string, content: string) => void;
+  // sendMessage: (senderId: string, receiverId: string, content: string) => void;
+  sendMessage: (receiverId: string, content: string) => void;
   fetchMessages: (userId: string) => Promise<void>;
   setSelectedUser: (user: User | null) => void;
 }
 
-const baseUrl = "http://localhost:5000";
+const baseUrl = "http://localhost:5001";
 
 const socket = io(baseUrl, {
   autoConnect: false,
@@ -34,12 +36,14 @@ export const useChatStore = create<ChatStore>((set, get) => ({
   users: [],
   isLoading: false,
   error: null,
-  socket: null,
+  socket: socket,
   isConnected: false,
   onlineUsers: new Set(),
   userActivities: new Map(),
   messages: [],
   selectedUser: null,
+
+  setSelectedUser: (user) => set({ selectedUser: user }),
 
   fetchUsers: async () => {
     set({ isLoading: false, error: null });
@@ -60,8 +64,9 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       socket.connect();
       socket.emit("user_connected", userId);
 
-      socket.on("user_online", (users: string[]) => {
+      socket.on("users_online", (users: string[]) => {
         set({ onlineUsers: new Set(users) });
+        console.log("CLIENT users_online:", users);
       });
 
       socket.on("activities", (activities: [string, string][]) => {
@@ -113,14 +118,20 @@ export const useChatStore = create<ChatStore>((set, get) => ({
     }
   },
 
-  sendMessage: async (senderId, receiverId, content) => {
+  // sendMessage: async (senderId, receiverId, content) => {
+  //   const socket = get().socket;
+
+  //   if (!socket) {
+  //     return;
+  //   }
+
+  //   socket.emit("send_message", { senderId, receiverId, content });
+  // },
+
+  sendMessage: async (receiverId, content) => {
     const socket = get().socket;
-
-    if (!socket) {
-      return;
-    }
-
-    socket.emit("send_message", senderId, receiverId, content);
+    if (!socket) return;
+    socket.emit("send_message", { receiverId, content });
   },
 
   fetchMessages: async (userId) => {
@@ -134,6 +145,4 @@ export const useChatStore = create<ChatStore>((set, get) => ({
       set({ isLoading: false });
     }
   },
-
-  setSelectedUser: (user) => set({ selectedUser: user }),
 }));
