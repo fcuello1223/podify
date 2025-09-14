@@ -9,6 +9,7 @@ import Auth from "./pages/auth/Auth";
 import Chat from "./pages/chat/Chat";
 import Album from "./pages/album/Album";
 import Admin from "./pages/admin/Admin";
+import NotFound from "./pages/error/NotFound";
 
 function App() {
   return (
@@ -21,6 +22,7 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/chat" element={<Chat />} />
           <Route path="/albums/:albumId" element={<Album />} />
+          <Route path="*" element={<NotFound />} />
         </Route>
       </Routes>
       <Toaster />
