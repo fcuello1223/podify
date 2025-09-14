@@ -3,6 +3,7 @@ import dotenv from "dotenv";
 import { clerkMiddleware } from "@clerk/express";
 import fileUpload from "express-fileupload";
 import path from "path";
+import { fileURLToPath } from "url";
 import cors from "cors";
 import { createServer } from "http";
 import cron from "node-cron";
@@ -24,7 +25,8 @@ const app = express();
 
 const PORT = process.env.PORT;
 
-const __dirname = path.resolve();
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const httpServer = createServer(app);
 initializeSocket(httpServer);
